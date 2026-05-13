@@ -2,7 +2,7 @@
   "name": "maxi-format",
   "displayName": "MAXI Format",
   "description": "Syntax highlighting for MAXI (.maxi / .mxs) files — Minimal API Exchange Interface",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "maxi-format",
   "license": "MIT",
   "main": "./extension.js",
