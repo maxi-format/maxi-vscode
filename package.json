@@ -2,8 +2,9 @@
   "name": "maxi-format",
   "displayName": "MAXI Format",
   "description": "Syntax highlighting for MAXI (.maxi / .mxs) files — Minimal API Exchange Interface",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "maxi-format",
+  "icon": "icons/icon.png",
   "license": "MIT",
   "main": "./extension.js",
   "engines": {
@@ -43,8 +44,14 @@
     "languages": [
       {
         "id": "maxi",
-        "aliases": ["MAXI", "maxi"],
-        "extensions": [".maxi", ".mxs"],
+        "aliases": [
+          "MAXI",
+          "maxi"
+        ],
+        "extensions": [
+          ".maxi",
+          ".mxs"
+        ],
         "configuration": "./language-configuration.json",
         "icon": {
           "light": "./icons/maxi-light.svg",
@@ -63,12 +70,24 @@
       {
         "language": "maxi",
         "scopes": {
-          "enumMember":             ["constant.other.enum-value.maxi"],
-          "enumMember.declaration": ["entity.name.tag.record-id.maxi"],
-          "parameter":              ["constant.language.boolean.maxi"],
-          "number":                 ["constant.numeric.maxi"],
-          "variable":               ["variable.other.readwrite.maxi"],
-          "string":                 ["string.unquoted.bytes.maxi"]
+          "enumMember": [
+            "constant.other.enum-value.maxi"
+          ],
+          "enumMember.declaration": [
+            "entity.name.tag.record-id.maxi"
+          ],
+          "parameter": [
+            "constant.language.boolean.maxi"
+          ],
+          "number": [
+            "constant.numeric.maxi"
+          ],
+          "variable": [
+            "variable.other.readwrite.maxi"
+          ],
+          "string": [
+            "string.unquoted.bytes.maxi"
+          ]
         }
       }
     ]
