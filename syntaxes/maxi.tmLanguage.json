@@ -1,0 +1,430 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "MAXI",
+  "scopeName": "source.maxi",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#separator" },
+    { "include": "#directive" },
+    { "include": "#type-definition" },
+    { "include": "#data-record" }
+  ],
+  "repository": {
+    "comment": {
+      "comment": "# comment lines (only valid before ### or in .mxs files)",
+      "name": "comment.line.number-sign.maxi",
+      "match": "^[ \\t]*#(?!#).*"
+    },
+
+    "separator": {
+      "comment": "### section separator between schema and data",
+      "name": "comment.line.separator.maxi",
+      "match": "^###$"
+    },
+
+    "directive": {
+      "comment": "@version:1.0.0  or  @schema:path/to/file.mxs",
+      "name": "meta.directive.maxi",
+      "match": "^(@[a-zA-Z]+)(:)(.+)$",
+      "captures": {
+        "1": { "name": "keyword.other.directive.maxi" },
+        "2": { "name": "punctuation.separator.key-value.maxi" },
+        "3": { "name": "string.unquoted.directive-value.maxi" }
+      }
+    },
+
+    "type-definition": {
+      "comment": "Type definition line: ALIAS:TypeName<Parent>(field1|field2|...) or multiline",
+      "name": "meta.type-definition.maxi",
+      "begin": "^([A-Z][A-Za-z0-9_-]*)(?=:|<)",
+      "end": "\\)$|^\\)",
+      "beginCaptures": {
+        "1": { "name": "entity.name.class.alias.maxi" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.parameters.end.maxi" }
+      },
+      "patterns": [
+        {
+          "comment": ":TypeName",
+          "match": "(:)([A-Z][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "punctuation.separator.key-value.maxi" },
+            "2": { "name": "entity.name.type.maxi" }
+          }
+        },
+        {
+          "comment": "<Parent1,Parent2> inheritance list",
+          "name": "meta.type-parents.maxi",
+          "begin": "<",
+          "end": ">",
+          "beginCaptures": { "0": { "name": "punctuation.definition.inheritance.begin.maxi" } },
+          "endCaptures":   { "0": { "name": "punctuation.definition.inheritance.end.maxi" } },
+          "patterns": [
+            {
+              "match": "[A-Z][A-Za-z0-9_-]*",
+              "name": "entity.other.inherited-class.maxi"
+            },
+            { "match": ",", "name": "punctuation.separator.comma.maxi" }
+          ]
+        },
+        {
+          "comment": "(field definitions) — matches the ( ... ) portion",
+          "name": "meta.type-fields.maxi",
+          "begin": "\\(",
+          "end": "(?=\\))",
+          "beginCaptures": { "0": { "name": "punctuation.definition.parameters.begin.maxi" } },
+          "patterns": [
+            { "include": "#field-def" },
+            { "match": "\\|", "name": "punctuation.separator.field.maxi" }
+          ]
+        }
+      ]
+    },
+
+    "field-def": {
+      "comment": "A single field definition: fieldName:typeExpr@annotation(constraints)=default",
+      "name": "meta.field-definition.maxi",
+      "patterns": [
+        {
+          "comment": "field name",
+          "match": "([a-zA-Z_][a-zA-Z0-9_-]*)(?=[:@(!|=\\)]|$)",
+          "captures": {
+            "1": { "name": "variable.other.field.maxi" }
+          }
+        },
+        {
+          "comment": ":typeExpr — primitive or object ref or array or enum or map",
+          "begin": ":",
+          "end": "(?=[(@!|=\\)]|$)",
+          "beginCaptures": { "0": { "name": "punctuation.separator.key-value.maxi" } },
+          "patterns": [
+            { "include": "#type-expr" }
+          ]
+        },
+        {
+          "comment": "@annotation",
+          "match": "(@)([a-zA-Z][a-zA-Z0-9_]*)",
+          "captures": {
+            "1": { "name": "punctuation.definition.annotation.maxi" },
+            "2": { "name": "storage.modifier.annotation.maxi" }
+          }
+        },
+        {
+          "comment": "constraint block (constraints)",
+          "begin": "\\(",
+          "end": "\\)",
+          "beginCaptures": { "0": { "name": "punctuation.definition.constraint.begin.maxi" } },
+          "endCaptures":   { "0": { "name": "punctuation.definition.constraint.end.maxi" } },
+          "patterns": [
+            { "include": "#constraint" },
+            { "match": ",", "name": "punctuation.separator.comma.maxi" }
+          ]
+        },
+        {
+          "comment": "=defaultValue",
+          "match": "(=)(\"(?:[^\"\\\\]|\\\\.)*\"|[^|)\\s]+)",
+          "captures": {
+            "1": { "name": "keyword.operator.assignment.maxi" },
+            "2": { "name": "constant.other.default-value.maxi" }
+          }
+        }
+      ]
+    },
+
+    "type-expr": {
+      "comment": "Type expressions: int, str, bool, float, decimal, bytes, enum[...], map<K,V>, T, T[]",
+      "patterns": [
+        {
+          "comment": "enum[val1,val2,...] — enum type with value list",
+          "name": "meta.type.enum.maxi",
+          "begin": "(enum)(\\[)",
+          "end": "\\]",
+          "beginCaptures": {
+            "1": { "name": "support.type.primitive.maxi" },
+            "2": { "name": "punctuation.definition.enum.begin.maxi" }
+          },
+          "endCaptures": { "0": { "name": "punctuation.definition.enum.end.maxi" } },
+          "patterns": [
+            {
+              "match": "\"(?:[^\"\\\\]|\\\\.)*\"",
+              "name": "string.quoted.double.enum-value.maxi"
+            },
+            {
+              "comment": "alias:value — color alias and full value separately",
+              "match": "([^,:\\]]+)(:)([^,\\]]+)",
+              "captures": {
+                "1": { "name": "constant.other.enum-alias.maxi" },
+                "2": { "name": "punctuation.separator.key-value.maxi" },
+                "3": { "name": "constant.other.enum-value.maxi" }
+              }
+            },
+            {
+              "comment": "plain enum value (no alias)",
+              "match": "[^,\\]]+",
+              "name": "constant.other.enum-value.maxi"
+            },
+            { "match": ",", "name": "punctuation.separator.comma.maxi" }
+          ]
+        },
+        {
+          "comment": "map<keyType,valueType>",
+          "name": "meta.type.map.maxi",
+          "begin": "(map)(<)",
+          "end": ">",
+          "beginCaptures": {
+            "1": { "name": "support.type.primitive.maxi" },
+            "2": { "name": "punctuation.definition.map.begin.maxi" }
+          },
+          "endCaptures": { "0": { "name": "punctuation.definition.map.end.maxi" } },
+          "patterns": [
+            { "include": "#type-expr" },
+            { "match": ",", "name": "punctuation.separator.comma.maxi" }
+          ]
+        },
+        {
+          "comment": "Primitive types",
+          "match": "\\b(int|str|float|decimal|bool|bytes)\\b",
+          "name": "support.type.primitive.maxi"
+        },
+        {
+          "comment": "Array suffix []",
+          "match": "\\[\\]",
+          "name": "punctuation.definition.array.maxi"
+        },
+        {
+          "comment": "Object type reference (uppercase alias)",
+          "match": "[A-Z][A-Za-z0-9_-]*",
+          "name": "entity.name.type.reference.maxi"
+        }
+      ]
+    },
+
+    "constraint": {
+      "comment": "Individual constraint expressions inside ()",
+      "patterns": [
+        {
+          "comment": "! required marker",
+          "match": "!",
+          "name": "keyword.operator.required.maxi"
+        },
+        {
+          "comment": "id constraint",
+          "match": "\\bid\\b",
+          "name": "keyword.other.id-constraint.maxi"
+        },
+        {
+          "comment": "comparison: >=N  <=N  >N  <N",
+          "match": "(>=|<=|>|<)(\\d[\\d.]*)",
+          "captures": {
+            "1": { "name": "keyword.operator.comparison.maxi" },
+            "2": { "name": "constant.numeric.maxi" }
+          }
+        },
+        {
+          "comment": "=N exact length",
+          "match": "(=)(\\d+)",
+          "captures": {
+            "1": { "name": "keyword.operator.exact-length.maxi" },
+            "2": { "name": "constant.numeric.maxi" }
+          }
+        },
+        {
+          "comment": "pattern:regex",
+          "match": "(pattern:)(.+?)(?=[,)]|$)",
+          "captures": {
+            "1": { "name": "keyword.other.constraint.pattern.maxi" },
+            "2": { "name": "string.regexp.maxi" }
+          }
+        },
+        {
+          "comment": "mime:[type/sub,...] or mime:type/sub",
+          "match": "(mime:)(\\[[^\\]]*\\]|[^,)]+)",
+          "captures": {
+            "1": { "name": "keyword.other.constraint.mime.maxi" },
+            "2": { "name": "string.unquoted.mime-type.maxi" }
+          }
+        },
+        {
+          "comment": "decimal precision  e.g. 2dp  0.01",
+          "match": "\\b\\d+dp\\b|\\b0\\.\\d+\\b",
+          "name": "constant.numeric.decimal-precision.maxi"
+        }
+      ]
+    },
+
+    "data-record": {
+      "comment": "Data record line: ALIAS(val1|val2|...) — single or multiline",
+      "name": "meta.data-record.maxi",
+      "begin": "^([A-Z][A-Za-z0-9_-]*)(?=\\()",
+      "end": "\\)$|^\\)",
+      "beginCaptures": {
+        "1": { "name": "support.function.record-alias.maxi" }
+      },
+      "patterns": [
+        {
+          "comment": "opening paren of a record",
+          "match": "\\(",
+          "name": "punctuation.definition.record.begin.maxi"
+        },
+        {
+          "comment": "closing paren of a record",
+          "match": "\\)",
+          "name": "punctuation.definition.record.end.maxi"
+        },
+        {
+          "comment": "pipe field separator",
+          "match": "\\|",
+          "name": "punctuation.separator.field.maxi"
+        },
+        {
+          "comment": "~ explicit null",
+          "match": "(?<=\\(|\\|)~(?=\\||\\))",
+          "name": "constant.language.null.maxi"
+        },
+        {
+          "comment": "quoted string value",
+          "name": "string.quoted.double.maxi",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "match": "\\\\[\"\\\\nrt]",
+              "name": "constant.character.escape.maxi"
+            }
+          ]
+        },
+        {
+          "comment": "inline nested object (alias)|field1|field2)",
+          "name": "meta.inline-object.maxi",
+          "begin": "\\(",
+          "end": "\\)",
+          "beginCaptures": { "0": { "name": "punctuation.definition.inline-object.begin.maxi" } },
+          "endCaptures":   { "0": { "name": "punctuation.definition.inline-object.end.maxi" } },
+          "patterns": [
+            { "include": "#record-value" }
+          ]
+        },
+        {
+          "comment": "array value [...]",
+          "name": "meta.array-value.maxi",
+          "begin": "\\[",
+          "end": "\\]",
+          "beginCaptures": { "0": { "name": "punctuation.definition.array.begin.maxi" } },
+          "endCaptures":   { "0": { "name": "punctuation.definition.array.end.maxi" } },
+          "patterns": [
+            { "include": "#record-value" },
+            { "match": ",", "name": "punctuation.separator.comma.maxi" }
+          ]
+        },
+        {
+          "comment": "map value {...}",
+          "name": "meta.map-value.maxi",
+          "begin": "\\{",
+          "end": "\\}",
+          "beginCaptures": { "0": { "name": "punctuation.definition.map.begin.maxi" } },
+          "endCaptures":   { "0": { "name": "punctuation.definition.map.end.maxi" } },
+          "patterns": [
+            { "include": "#map-entry" },
+            { "match": ",", "name": "punctuation.separator.comma.maxi" }
+          ]
+        },
+        { "include": "#record-value" }
+      ]
+    },
+
+    "record-value": {
+      "comment": "A single field value inside a record or nested structure",
+      "patterns": [
+        {
+          "comment": "~ null",
+          "match": "~",
+          "name": "constant.language.null.maxi"
+        },
+        {
+          "comment": "quoted string",
+          "name": "string.quoted.double.maxi",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "match": "\\\\[\"\\\\nrt]", "name": "constant.character.escape.maxi" }
+          ]
+        },
+        {
+          "comment": "decimal number (with dot) — only when standalone field value",
+          "match": "-?\\b\\d+\\.\\d+\\b(?=[|),\\]{}]|$)",
+          "name": "constant.numeric.float.maxi"
+        },
+        {
+          "comment": "integer number — only when standalone field value",
+          "match": "-?\\b\\d+\\b(?=[|),\\]{}]|$)",
+          "name": "constant.numeric.integer.maxi"
+        },
+        {
+          "comment": "inline object value (nested parens)",
+          "begin": "\\(",
+          "end": "\\)",
+          "beginCaptures": { "0": { "name": "punctuation.definition.inline-object.begin.maxi" } },
+          "endCaptures":   { "0": { "name": "punctuation.definition.inline-object.end.maxi" } },
+          "patterns": [
+            { "include": "#record-value" },
+            { "match": "\\|", "name": "punctuation.separator.field.maxi" }
+          ]
+        },
+        {
+          "comment": "array value",
+          "begin": "\\[",
+          "end": "\\]",
+          "beginCaptures": { "0": { "name": "punctuation.definition.array.begin.maxi" } },
+          "endCaptures":   { "0": { "name": "punctuation.definition.array.end.maxi" } },
+          "patterns": [
+            { "include": "#record-value" },
+            { "match": ",", "name": "punctuation.separator.comma.maxi" }
+          ]
+        },
+        {
+          "comment": "map value",
+          "begin": "\\{",
+          "end": "\\}",
+          "beginCaptures": { "0": { "name": "punctuation.definition.map.begin.maxi" } },
+          "endCaptures":   { "0": { "name": "punctuation.definition.map.end.maxi" } },
+          "patterns": [
+            { "include": "#map-entry" },
+            { "match": ",", "name": "punctuation.separator.comma.maxi" }
+          ]
+        },
+        {
+          "comment": "unquoted string value (semantic tokens handle enum coloring)",
+          "match": "[^|()\\[\\]{},~\"\\s]+",
+          "name": "string.unquoted.maxi"
+        }
+      ]
+    },
+
+    "map-entry": {
+      "comment": "key:value inside a map {...}",
+      "patterns": [
+        {
+          "comment": "quoted key",
+          "name": "string.quoted.double.map-key.maxi",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "match": "\\\\[\"\\\\nrt]", "name": "constant.character.escape.maxi" }
+          ]
+        },
+        {
+          "comment": "unquoted key",
+          "match": "[^:,{}\"\\s]+(?=:)",
+          "name": "string.unquoted.map-key.maxi"
+        },
+        {
+          "comment": ": key-value separator",
+          "match": ":",
+          "name": "punctuation.separator.key-value.maxi"
+        },
+        { "include": "#record-value" }
+      ]
+    }
+  }
+}

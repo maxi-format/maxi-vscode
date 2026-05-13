@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <rect width="16" height="16" rx="2" fill="#f8fafc"/>
+  <!-- 4 colored rows like the logo -->
+  <rect x="1" y="1.25" width="14" height="3" rx="1" fill="#fecaca"/>
+  <rect x="1" y="1.25" width="3"  height="3" rx="1" fill="#ee4035"/>
+  <rect x="12" y="1.25" width="3" height="3" rx="1" fill="#ee4035"/>
+
+  <rect x="1" y="4.75" width="14" height="3" rx="1" fill="#fed7aa"/>
+  <rect x="1" y="4.75" width="3"  height="3" rx="1" fill="#f37736"/>
+  <rect x="12" y="4.75" width="3" height="3" rx="1" fill="#f37736"/>
+
+  <rect x="1" y="8.25" width="14" height="3" rx="1" fill="#bbf7d0"/>
+  <rect x="1" y="8.25" width="3"  height="3" rx="1" fill="#7bc043"/>
+  <rect x="12" y="8.25" width="3" height="3" rx="1" fill="#7bc043"/>
+
+  <rect x="1" y="11.75" width="14" height="3" rx="1" fill="#bae6fd"/>
+  <rect x="1" y="11.75" width="3"  height="3" rx="1" fill="#0392cf"/>
+  <rect x="12" y="11.75" width="3" height="3" rx="1" fill="#0392cf"/>
+
+  <!-- M overlaid -->
+  <text x="5" y="12" font-family="JetBrains Mono, Monaco, monospace" font-weight="800" font-size="11" fill="#0f172a" opacity="0.95">M</text>
+</svg>

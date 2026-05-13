@@ -1,0 +1,76 @@
+{
+  "name": "maxi-format",
+  "displayName": "MAXI Format",
+  "description": "Syntax highlighting for MAXI (.maxi / .mxs) files — Minimal API Exchange Interface",
+  "version": "0.1.0",
+  "publisher": "maxi-format",
+  "license": "MIT",
+  "main": "./extension.js",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "maxi",
+    "mxs",
+    "serialization",
+    "data format"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxi-format/maxi-vscode"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.0.0",
+    "ovsx": "^0.10.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12"
+  },
+  "activationEvents": [
+    "onLanguage:maxi"
+  ],
+  "configurationDefaults": {
+    "[maxi]": {
+      "editor.semanticHighlighting.enabled": true
+    }
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "maxi",
+        "aliases": ["MAXI", "maxi"],
+        "extensions": [".maxi", ".mxs"],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/maxi-light.svg",
+          "dark": "./icons/maxi-dark.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "maxi",
+        "scopeName": "source.maxi",
+        "path": "./syntaxes/maxi.tmLanguage.json"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "maxi",
+        "scopes": {
+          "enumMember":             ["constant.other.enum-value.maxi"],
+          "enumMember.declaration": ["entity.name.tag.record-id.maxi"],
+          "parameter":              ["constant.language.boolean.maxi"],
+          "number":                 ["constant.numeric.maxi"],
+          "variable":               ["variable.other.readwrite.maxi"],
+          "string":                 ["string.unquoted.bytes.maxi"]
+        }
+      }
+    ]
+  }
+}
