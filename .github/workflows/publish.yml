@@ -19,9 +19,9 @@ jobs:
         run: npm install
 
       - name: Publish to VS Code Marketplace
-        run: vsce publish --no-dependencies
+        run: npx vsce publish --no-dependencies
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
       - name: Publish to Open VSX Registry
-        run: ovsx publish --pat ${{ secrets.OVSX_PAT }} --no-dependencies
+        run: npx ovsx publish --pat ${{ secrets.OVSX_PAT }} --no-dependencies
